@@ -7,8 +7,11 @@
   :depends-on (#:clinch
                #:clinch-cairo
                #:clinch-pango
-	       #:clinch-freeimage)
+	       #:clinch-freeimage
+	       #:sdl2-mixer
+	       #:squirl)
   :serial t
   :components ((:file "package")
+	       (:file "physics")
                (:file "indy-anna")))
 
