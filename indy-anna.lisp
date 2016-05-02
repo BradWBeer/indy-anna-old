@@ -10,7 +10,7 @@
 (defparameter +girl-node+ nil)
 (defparameter +girl-entity+ nil)
 (defparameter +girl-velocity+ (v! 0 0 0))
-(defparameter +girl-walk-speed+ (/ 2 +physics-timestep+))
+(defparameter +girl-walk-speed+ 500)
 (defparameter +blue-arrow-node+ nil)
 (defparameter +blue-arrow-entity+ nil)
 (defparameter +orange-arrow-node+ nil)
@@ -98,11 +98,11 @@
   (!s +magic-circle-green-node+ 0 0 1)
 
   (!t +girl-node+ 0 0 10)
-  (!t +orange-arrow-node+ 0 0 8)
-  (!t +blue-arrow-node+ 0 0 9)
-  (!t +magic-circle-blue-node+ 0 0 1)
-  (!t +magic-circle-green-node+ 0 0 2)
-  (!t +w1-node+ 0 0 3)
+  (!t +orange-arrow-node+ 0 0 2)
+  (!t +blue-arrow-node+ 0 0 1)
+  (!t +magic-circle-blue-node+ 0 0 -2)
+  (!t +magic-circle-green-node+ 0 0 -1)
+  (!t +w1-node+ 0 0 5)
   
   (setf (children +character-node+)
 	(sort-children +character-node+))
@@ -126,12 +126,14 @@
 	(t (format t "axis: ~A ~A~%" axis-id pos))))))
 
 (defevent *on-idle* ()
-    (declare (optimize (speed 3)))
-  (multiple-value-bind (count remainder) (floor (+ (/ *delta-ticks* 1000) +last-frame-time+) +physics-timestep+)
-    ;;(print (list (float (/ *delta-ticks* 1000)) count remainder))
-    (setf +last-frame-time+ remainder)
-    (dotimes (i 5)
-      (squirl:world-step +world+ +physics-timestep+)))
+  (declare (optimize (speed 3)))
+  
+   (multiple-value-bind (count remainder) (floor (+ (/ *delta-ticks* 1000) +last-frame-time+) +physics-timestep+)
+     ;;(print (list (float (/ *delta-ticks* 1000)) count remainder))
+     (setf +last-frame-time+ remainder)
+     (when (> *delta-ticks* 19) (format t "Overtime: ~A Steps: ~A~%" *delta-ticks* count))
+     (dotimes (i (max 0 count))
+       (time (squirl:world-step +world+ +physics-timestep+))))
   
   (let ((vec (v2:normalize +joystick-1+)))
     (setf (rotation +blue-arrow-node+)
@@ -146,6 +148,8 @@
 			 (/ (- (abs len) +axis-dead-zone+)
 			    (- 1 +axis-dead-zone+))))))
     (setf (squirl:body-velocity +girl-body+) (squirl:vec (* (aref unit 0) speed +girl-walk-speed+) (* (aref unit 1) speed +girl-walk-speed+) ))
+    ;; (when (> speed .1)
+    ;;   (print (squirl:body-velocity +girl-body+)))
     (setf (rotation +orange-arrow-node+)
 	  (rtg-math.quaternions:from-fixed-angles 0 0 (- (atan (aref +joystick-2+ 0) (aref +joystick-2+ 1)))))
     (!s +orange-arrow-node+ .2 (* .4 speed) .2 t)
@@ -187,3 +191,10 @@
 
 (defun start ()
   (init))
+
+
+(let ((vs t))
+  (defun toggle-vsync ()
+    (clinch:! (if (setf vs (not vs))
+		  (sdl2:gl-set-swap-interval 1)
+		  (sdl2:gl-set-swap-interval 0)))))

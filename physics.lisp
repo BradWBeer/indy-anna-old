@@ -4,7 +4,7 @@
 
 (defparameter +world+ nil)
 (defparameter +last-frame-time+ nil)
-(defparameter +physics-timestep+ (/ (* 60 10)))
+(defconstant +physics-timestep+ (coerce (/ (* 60 10)) 'double-float))
 (defparameter +girl-body+ nil)
 (defparameter +w1-body+ nil)
 
@@ -18,12 +18,12 @@
 (defun reset-body (body)
   (setf (squirl:body-position body) (squirl:vec 0 0)
 	(squirl:body-velocity body) (squirl:vec 0 0)
-	(squirl::body-angular-velocity +w1-body+) 0.0d0
+	(squirl::body-angular-velocity body) 0.0d0
 	(squirl:body-rotation body) (squirl:vec 1 0)))
 		 
 
 (defun make-ball (x y)
-  (squirl:make-body :mass 1.0 :position (squirl:vec x y) :shapes (list (squirl:make-circle 20.0))))
+  (squirl:make-body :mass 1.0 :inertia 0.0d0 :calculate-inertia-p nil :position (squirl:vec x y) :shapes (list (squirl:make-circle 20.0))))
 
 (defun make-box (w h)
   (let ((verts (list (squirl:vec (* -1/2 w) (* -1/2 h))
@@ -38,12 +38,20 @@
 
 (defun init-physics ()
   
-  (setf +world+ (squirl:make-world :iterations 10))
-  (squirl:resize-world-active-hash +world+ 2.0 10000)
-  (squirl:resize-world-static-hash +world+ 40 1000)
+  (setf +world+ (squirl:make-world :iterations 5))
+  (squirl:resize-world-active-hash +world+ 20 100)
+  (squirl:resize-world-static-hash +world+ 20 100)
 
   (setf +girl-body+ (squirl:world-add-body +world+ (make-ball 0 0))
 	+w1-body+   (make-box 50 250))
+
+
+  (setf (squirl:body-position +girl-body+) (squirl:vec 0 0)
+	(squirl:body-velocity +girl-body+) (squirl:vec 0 0)
+	(squirl::body-angular-velocity +girl-body+) 0.0d0
+	(squirl:body-rotation +girl-body+) (squirl:vec 1 0))
+
+
   )
 
 (defun update-physics () )
