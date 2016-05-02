@@ -38,7 +38,7 @@
 
 (defun init-physics ()
   
-  (setf +world+ (squirl:make-world :iterations 5))
+  (setf +world+ (squirl:make-world :iterations 1))
   (squirl:resize-world-active-hash +world+ 20 100)
   (squirl:resize-world-static-hash +world+ 20 100)
 

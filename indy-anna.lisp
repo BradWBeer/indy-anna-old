@@ -128,12 +128,12 @@
 (defevent *on-idle* ()
   (declare (optimize (speed 3)))
   
-   (multiple-value-bind (count remainder) (floor (+ (/ *delta-ticks* 1000) +last-frame-time+) +physics-timestep+)
+   (multiple-value-bind (count remainder) (floor (- (/ *delta-ticks* 1000) +last-frame-time+) +physics-timestep+)
      ;;(print (list (float (/ *delta-ticks* 1000)) count remainder))
      (setf +last-frame-time+ remainder)
-     (when (> *delta-ticks* 19) (format t "Overtime: ~A Steps: ~A~%" *delta-ticks* count))
+     ;;(when (> *delta-ticks* 19) (format t "Overtime: ~A Steps: ~A~%" *delta-ticks* count))
      (dotimes (i (max 0 count))
-       (time (squirl:world-step +world+ +physics-timestep+))))
+       (squirl:world-step +world+ +physics-timestep+)))
   
   (let ((vec (v2:normalize +joystick-1+)))
     (setf (rotation +blue-arrow-node+)
