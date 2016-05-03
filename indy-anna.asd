@@ -12,6 +12,7 @@
 	       #:squirl)
   :serial t
   :components ((:file "package")
+	       (:file "utils")
 	       (:file "physics")
                (:file "indy-anna")))
 
