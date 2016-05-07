@@ -19,9 +19,8 @@
 		 (acons ,n ,v ,lst)))
        ,v)))
 
-(defmacro get-entity-value (key name)
-  `(cdr (assoc ,name (gethash ,key *hash*))))
-
+(defmacro entity-value (key name)
+  `(gethash ,name (gethash ,key *hash*)))
 
 (defun joystick-to-rotation (js)
   (let ((vec (v2:normalize js)))
@@ -31,6 +30,10 @@
 
 (defun v->complex (v)
   (complex (* (aref v 0) 1d0) (* (aref v 1) 1d0)))
+
+(defun complex->v (c)
+  (v2:make (coerce (realpart c) 'single-float) (coerce (imagpart c) 'single-float)))
+
 
 (defun map-true (f lst)
   (when lst
