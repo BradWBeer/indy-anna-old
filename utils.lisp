@@ -22,6 +22,12 @@
 (defmacro entity-value (key name)
   `(gethash ,name (gethash ,key *hash*)))
 
+(defun length^2 (c)
+  (let ((r (realpart c))
+	(i (imagpart c)))
+    (+ (* r r)
+       (* i i))))
+
 (defun joystick-to-rotation (js)
   (let ((vec (v2:normalize js)))
     (rtg-math.quaternions:from-fixed-angles
